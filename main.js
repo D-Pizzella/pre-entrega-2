@@ -1,7 +1,100 @@
-function comparar (){
+document.addEventListener('DOMContentLoaded', function () {
+    cargarRegistros();
+
+    const tiempoInput = document.getElementById('tiempoInput');
+    tiempoInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            compararTiempos();
+        }
+    });
+});
+
+function compararTiempos() {
+    const tiempoUsuario = parseFloat(document.getElementById('tiempoInput').value) 
+
+    if (isNaN(tiempoUsuario)) {
+        alert("Por favor, ingresa un valor numérico para el tiempo.") 
+        return 
+    }
+
+    const rangoInferior = tiempoUsuario - 1 
+    const rangoSuperior = tiempoUsuario + 1 
+
+    const tiemposEnRango = records.filter(record => record.tiempo >= rangoInferior && record.tiempo <= rangoSuperior) 
+
+    if (tiemposEnRango.length === 0) {
+        alert("No se encontraron coincidencias en el rango especificado.") 
+    } else {
+        mostrarResultados(tiemposEnRango) 
+    }
+}
+
+function agregarTiempo() {
+    let nombre
+    do {
+        nombre = prompt("Ingrese el nombre y apellido del nadador:") 
+        if (!isNaN(nombre)) {
+            alert("Ingrese un nombre válido")
+        }
+    } while (!nombre || !isNaN(nombre))
+    
+    let nacionalidad
+    do {
+        nacionalidad = prompt("Ingrese el país de origen del nadador:") 
+        if (!isNaN(nacionalidad)) {
+            alert("La nacionalidad no puede ser un número. Por favor, ingrésela nuevamente.") 
+        }
+    } while (!nacionalidad || !isNaN(nacionalidad)) 
+
+    const edad = parseInt(prompt("Ingrese la edad del nadador:")) 
+    const nuevoTiempo = parseFloat(prompt("Ingrese el tiempo en segundos para los 50m libres:")) 
+
+    if (isNaN(edad) || isNaN(nuevoTiempo)) {
+        alert("Por favor, ingresa valores numéricos para la edad y el tiempo.") 
+        return 
+    }
+
+    const nuevoRegistro = {
+        nombre: nombre,
+        tiempo: nuevoTiempo,
+        nacionalidad: nacionalidad,
+        edad: edad
+    } 
+
+    records.push(nuevoRegistro) 
+    localStorage.setItem('registros', JSON.stringify(records))  
+    alert("El tiempo fue registrado.") 
+
+    cargarRegistros()  
+}
 
 
-const records = [
+function mostrarResultados(tiempos) {
+    const resultadosDiv = document.getElementById('resultados') 
+    resultadosDiv.innerHTML = "" 
+
+    tiempos.sort((a, b) => a.tiempo - b.tiempo) 
+
+    const lista = document.createElement('ol') 
+    
+    tiempos.forEach(record => {
+        const item = document.createElement('li') 
+        item.textContent = `${record.nombre} - Tiempo: ${record.tiempo} segundos - Nacionalidad: ${record.nacionalidad} - Edad: ${record.edad} años` 
+        lista.appendChild(item) 
+    }) 
+
+    resultadosDiv.appendChild(lista) 
+}
+
+
+function cargarRegistros() {
+    const registrosGuardados = localStorage.getItem('registros') 
+    if (registrosGuardados) {
+        records = JSON.parse(registrosGuardados) 
+    }
+}
+
+let records = [
     { nombre: "Cesar Cielo", tiempo: 20.91, nacionalidad: "Brasil", edad: 25 },
     { nombre: "Alejandro Rodriguez", tiempo: 21.00, nacionalidad: "México", edad: 25 },
     { nombre: "Caeleb Dressel", tiempo: 21.45, nacionalidad: "Estados Unidos", edad: 22 },
@@ -14,40 +107,5 @@ const records = [
     { nombre: "Andres Rodriguez", tiempo: 21.20, nacionalidad: "Colombia", edad: 21 },
     { nombre: "Pedro Sanchez", tiempo: 21.37, nacionalidad: "Perú", edad: 21 },
     { nombre: "Juan Gonzalez", tiempo: 21.80, nacionalidad: "Argentina", edad: 25 },
-]
+] 
 
-let tiempoUsuario, edadUsuario;
-
-do {
-    tiempoUsuario = parseFloat(prompt("Ingrese el tiempo en segundos para los 50m libres:"));
-
-    if (isNaN(tiempoUsuario)) {
-        alert("Por favor, ingresa un valor numérico para el tiempo.");
-    }
-} while (isNaN(tiempoUsuario));
-
-do {
-    edadUsuario = parseInt(prompt("Ingrese la edad en la que se realizó el tiempo (entre 20 y 25):"));
-
-    if (isNaN(edadUsuario)) {
-        alert("Por favor, ingresa un valor numérico para la edad.");
-    } else if (edadUsuario > 25) {
-        alert("Este simulador es para gente joven, entre 20 y 25 años.");
-    }
-} while (isNaN(edadUsuario) || edadUsuario > 25);
-
-const tiemposMismaEdad = records.filter(record => record.edad === edadUsuario)
-const tiemposMismaEdadOrdenados = tiemposMismaEdad.sort((a, b) => a.tiempo - b.tiempo)
-
-console.log("\nEl mejor timepo realizado a la edad de " + edadUsuario + " años:")
-console.table(tiemposMismaEdad, ["nombre", "tiempo", "nacionalidad", "edad"])
-
-const mejorTiempo = tiemposMismaEdad.reduce((mejor, actual) => (mejor.tiempo < actual.tiempo ? mejor : actual))
-
-const diferenciaTiempo = Math.abs(tiempoUsuario - mejorTiempo.tiempo)
-
-console.log("\nDiferencia de tiempo entre el tiempo ingresado (" + tiempoUsuario +") y el mejor tiempo a la misma edad: " + diferenciaTiempo.toFixed(2) + " segundos.")
-
-}
-
-comparar()

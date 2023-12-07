@@ -1,12 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<link rel="stylesheet" href="style.css">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Comparador de Tiempos</title>
 </head>
 <body>
-    
+    <h1>Compará tu tiempo en 50m libre con el resto de nadadores y conocé con quienes estas a menos de 1 segundo</h1>
+    <label for="tiempoInput">Tu tiempo en segundos:</label>
+    <input type="text" id="tiempoInput">
+    <button onclick="compararTiempos()">Comparar Tiempo</button>
+
+    <button class="agrega" onclick="agregarTiempo()">Agregar Tiempo</button>
+
+    <div id="resultados"></div>
+
     <script src="main.js"></script>
 </body>
 </html>
