@@ -1,96 +1,133 @@
 document.addEventListener('DOMContentLoaded', function () {
-    cargarRegistros();
+    cargarRegistros()  
 
-    const tiempoInput = document.getElementById('tiempoInput');
+    const tiempoInput = document.getElementById('tiempoInput')  
     tiempoInput.addEventListener('keyup', function(event) {
         if (event.key === 'Enter') {
-            compararTiempos();
+            compararTiempos()  
         }
-    });
-});
+    })  
+})  
 
 function compararTiempos() {
-    const tiempoUsuario = parseFloat(document.getElementById('tiempoInput').value) 
+    const tiempoUsuario = parseFloat(document.getElementById('tiempoInput').value)  
 
     if (isNaN(tiempoUsuario)) {
-        alert("Por favor, ingresa un valor numérico para el tiempo.") 
-        return 
+        alert("Por favor, ingresa un valor numérico para el tiempo.")  
+        return  
     }
 
-    const rangoInferior = tiempoUsuario - 1 
-    const rangoSuperior = tiempoUsuario + 1 
+    const rangoInferior = tiempoUsuario - 1  
+    const rangoSuperior = tiempoUsuario + 1  
 
-    const tiemposEnRango = records.filter(record => record.tiempo >= rangoInferior && record.tiempo <= rangoSuperior) 
+    const tiemposEnRango = records.filter(record => record.tiempo >= rangoInferior && record.tiempo <= rangoSuperior)  
 
     if (tiemposEnRango.length === 0) {
-        alert("No se encontraron coincidencias en el rango especificado.") 
+        alert("No se encontraron coincidencias en el rango especificado.")  
     } else {
-        mostrarResultados(tiemposEnRango) 
+        mostrarResultados(tiemposEnRango)  
     }
 }
 
 function agregarTiempo() {
-    let nombre
-    do {
-        nombre = prompt("Ingrese el nombre y apellido del nadador:") 
-        if (!isNaN(nombre)) {
-            alert("Ingrese un nombre válido")
-        }
-    } while (!nombre || !isNaN(nombre))
-    
-    let nacionalidad
-    do {
-        nacionalidad = prompt("Ingrese el país de origen del nadador:") 
-        if (!isNaN(nacionalidad)) {
-            alert("La nacionalidad no puede ser un número. Por favor, ingrésela nuevamente.") 
-        }
-    } while (!nacionalidad || !isNaN(nacionalidad)) 
+    const container = document.getElementById('resultados')  
 
-    const edad = parseInt(prompt("Ingrese la edad del nadador:")) 
-    const nuevoTiempo = parseFloat(prompt("Ingrese el tiempo en segundos para los 50m libres:")) 
+    // Crear elementos de input
+    const nombreInput = document.createElement('input')  
+    nombreInput.setAttribute('type', 'text')  
+    nombreInput.setAttribute('placeholder', 'Nombre y Apellido')  
+    container.appendChild(nombreInput)  
 
-    if (isNaN(edad) || isNaN(nuevoTiempo)) {
-        alert("Por favor, ingresa valores numéricos para la edad y el tiempo.") 
-        return 
+    const nacionalidadInput = document.createElement('input')  
+    nacionalidadInput.setAttribute('type', 'text')  
+    nacionalidadInput.setAttribute('placeholder', 'País de origen')  
+    container.appendChild(nacionalidadInput)  
+
+    const edadInput = document.createElement('input')  
+    edadInput.setAttribute('type', 'number')  
+    edadInput.setAttribute('placeholder', 'Edad')  
+    container.appendChild(edadInput)  
+
+    const tiempoNuevoInput = document.createElement('input')  
+    tiempoNuevoInput.setAttribute('type', 'number')  
+    tiempoNuevoInput.setAttribute('placeholder', 'Tiempo en segundos')  
+    container.appendChild(tiempoNuevoInput)  
+
+    const agregarButton = document.createElement('button')  
+    agregarButton.textContent = 'Agregar Tiempo'  
+    agregarButton.addEventListener('click', function() {
+        const nombre = nombreInput.value.trim()  
+        const nacionalidad = nacionalidadInput.value.trim()  
+        const edad = edadInput.value  
+        const nuevoTiempo = tiempoNuevoInput.value  
+
+        if (!isNaN(parseInt(nombre)) || !isNaN(parseInt(nacionalidad))) {
+            alert("Nombre y nacionalidad no pueden ser números.")  
+            return  
+        }
+
+        if (isNaN(parseInt(edad)) || isNaN(parseFloat(nuevoTiempo))) {
+            alert("Por favor, ingresa valores numéricos para la edad y el tiempo.")  
+            return  
+        }
+
+        agregarTiempoFromInput(nombre, nacionalidad, edad, nuevoTiempo)  
+        container.innerHTML = ''   // Limpiar los elementos de input después de agregar el tiempo
+    })  
+    container.appendChild(agregarButton)  
+}
+
+function agregarTiempoFromInput(nombre, nacionalidad, edad, nuevoTiempo) {
+    nombre = nombre.trim()  
+    if (!nombre) {
+        alert("Ingrese un nombre válido")  
+        return  
     }
+
+    nacionalidad = nacionalidad.trim()  
+    if (!nacionalidad) {
+        alert("La nacionalidad no puede ser vacía. Por favor, ingrésela nuevamente.")  
+        return  
+    }
+
+    const edadNum = parseInt(edad) || 0  
+    const nuevoTiempoNum = parseFloat(nuevoTiempo) || 0  
 
     const nuevoRegistro = {
         nombre: nombre,
-        tiempo: nuevoTiempo,
+        tiempo: nuevoTiempoNum,
         nacionalidad: nacionalidad,
-        edad: edad
-    } 
+        edad: edadNum
+    }  
 
-    records.push(nuevoRegistro) 
+    records.push(nuevoRegistro)  
     localStorage.setItem('registros', JSON.stringify(records))  
-    alert("El tiempo fue registrado.") 
+    alert("El tiempo fue registrado.")  
 
     cargarRegistros()  
 }
 
-
 function mostrarResultados(tiempos) {
-    const resultadosDiv = document.getElementById('resultados') 
-    resultadosDiv.innerHTML = "" 
+    const resultadosDiv = document.getElementById('resultados')  
+    resultadosDiv.innerHTML = ""  
 
-    tiempos.sort((a, b) => a.tiempo - b.tiempo) 
+    tiempos.sort((a, b) => a.tiempo - b.tiempo)  
 
-    const lista = document.createElement('ol') 
-    
+    const lista = document.createElement('ol')  
+
     tiempos.forEach(record => {
-        const item = document.createElement('li') 
-        item.textContent = `${record.nombre} - Tiempo: ${record.tiempo} segundos - Nacionalidad: ${record.nacionalidad} - Edad: ${record.edad} años` 
-        lista.appendChild(item) 
-    }) 
+        const item = document.createElement('li')  
+        item.textContent = `${record.nombre} - Tiempo: ${record.tiempo} segundos - Nacionalidad: ${record.nacionalidad} - Edad: ${record.edad} años`  
+        lista.appendChild(item)  
+    })  
 
-    resultadosDiv.appendChild(lista) 
+    resultadosDiv.appendChild(lista)  
 }
 
-
 function cargarRegistros() {
-    const registrosGuardados = localStorage.getItem('registros') 
+    const registrosGuardados = localStorage.getItem('registros')  
     if (registrosGuardados) {
-        records = JSON.parse(registrosGuardados) 
+        records = JSON.parse(registrosGuardados)  
     }
 }
 
@@ -107,5 +144,4 @@ let records = [
     { nombre: "Andres Rodriguez", tiempo: 21.20, nacionalidad: "Colombia", edad: 21 },
     { nombre: "Pedro Sanchez", tiempo: 21.37, nacionalidad: "Perú", edad: 21 },
     { nombre: "Juan Gonzalez", tiempo: 21.80, nacionalidad: "Argentina", edad: 25 },
-] 
-
+]  
